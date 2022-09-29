@@ -12,19 +12,17 @@ import {
   Container,
   Form,
   Divider,
-  Image,
   Message,
   Grid,
   Card,
   Icon,
-  Header,
 } from 'semantic-ui-react';
 
 const App = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [contract, setContract] = useState({});
-  const [web3, setWeb3] = useState({});
+  const [, setWeb3] = useState({});
   const [errors, setErrors] = useState();
 
   const [videos, setVideos] = useState([]);
@@ -34,12 +32,21 @@ const App = () => {
   // IPFS Array buffer
   const [bufferFile, setBufferFile] = useState(null);
 
-  const url = `https://ipfs.infura.io/ipfs/`;
+  const INFURA_ID = process.env.REACT_APP_INFURA_ID;
+  const INFURA_SECRET_KEY = process.env.REACT_APP_INFURA_SECRET_KEY;
+  const auth =
+    'Basic ' +
+    Buffer.from(INFURA_ID + ':' + INFURA_SECRET_KEY).toString('base64');
+
+  const url = `https://dropbox.infura-ipfs.io/ipfs`;
 
   const ipfs = create({
     host: 'ipfs.infura.io',
     port: '5001',
     protocol: 'https',
+    headers: {
+      authorization: auth,
+    },
   });
 
   const loadWeb3 = async () => {
@@ -172,11 +179,11 @@ const App = () => {
         <Grid celled>
           <Grid.Row>
             <Grid.Column width={12}>
-              {latestVideo && (
+              {latestVideo && !!latestVideo.hash && (
                 <>
                   <h4>{latestVideo.title}</h4>
                   <video
-                    src={`${url}${latestVideo?.hash}`}
+                    src={`${url}/${latestVideo?.hash}`}
                     controls
                     width='640'
                     height='360'
@@ -220,7 +227,7 @@ const App = () => {
                   >
                     <Card centered>
                       <video
-                        src={`${url}${video?.hash}`}
+                        src={`${url}/${video?.hash}`}
                         width='auto'
                         height='auto'
                       />
@@ -229,7 +236,7 @@ const App = () => {
                         <Card.Meta>Author</Card.Meta>
                         <Card.Description>
                           <a
-                            href={`https://rinkeby.etherscan.io/address/${video.author}`}
+                            href={`https://goerli.etherscan.io/address/${video.author}`}
                             target='_blank'
                             rel='noopener noreferrer'
                           >
